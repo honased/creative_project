@@ -1,0 +1,24 @@
+body {
+    background-color: black;
+}
+textarea {
+    color: lime;
+    outline: none;
+    border-color: white;
+    background-color: black;
+    min-width: 100%;
+    min-height: 500px;
+    font-size: large;
+}
+
+label {
+    color: lime;
+}
+
+input {
+    color: lime;
+    background-color: black;
+    border-color: white;
+    border-radius: 5px;
+    outline: none;
+}
