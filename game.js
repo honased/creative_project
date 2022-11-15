@@ -27,9 +27,10 @@ gagVisited = false;
 
 class Item
 {
-    constructor(name)
+    constructor(name, pickable)
     {
         this.name = name;
+        this.pickable = pickable;
     }
 }
 
@@ -109,6 +110,9 @@ class StartingArea extends ParRoom
         super();
         this.commands.push(new Command(['say hello'], (function () { outputText('Hi there!') })));
         this.west = new GagArea();
+        this.west.east = this;
+        this.north = new ForestPath1();
+        this.north.south = this;
         this.visited = false;
     }
 
@@ -135,6 +139,7 @@ class GagArea extends ParRoom
     getDescription()
     {
         this.index += 1;
+        gagVisited = true
         switch(this.index)
         {
             case 0: return "You stand in an area known as 'Gag Area'. You see a sign with the text 'Go West and you'll end up back here'. That seems like a stupid idea and a waste of time. You see a path East to leave this area.";
@@ -148,6 +153,167 @@ class GagArea extends ParRoom
         }
 
     }
+}
+
+class ForestPath1 extends ParRoom
+{
+    constructor()
+    {
+        super();
+        this.chalkItem = new Item("Chalk", true);
+        this.items.push(this.chalkItem);
+        this.north = new Clearing();
+        this.north.south = this;
+    }
+
+    getDescription()
+    {
+        var retText = "You stop in the middle of a worn path in the forest.";
+        if(this.items.includes(this.chalkItem)) retText += " As you gaze around, something catches your artist eye. A small piece of chalk lies right off the path."
+        retText += " You see an opening both north and south of you.";
+        return retText;
+    }
+}
+
+class Clearing extends ParRoom
+{
+    constructor()
+    {
+        super();
+        this.east = new ForestPath2();
+        this.east.west = this;
+        this.north = new Zelinsky();
+        this.north.south = this;
+    }
+
+    getDescription()
+    {
+        return "You encounter a clearing in the forest. To the north, you can see a decaying building off in the distance. There also appears to be paths west, east, and south of you.";
+    }
+}
+
+class ForestPath2 extends ParRoom
+{
+    constructor()
+    {
+        super();
+        this.east = new ForestPath3();
+        this.east.west = this;
+    }
+
+    getDescription()
+    {
+        return "You stand in the middle of a path with openings to the east and west of you.";
+    }
+}
+
+class ForestPath3 extends ParRoom
+{
+    constructor()
+    {
+        super();
+        this.south = new ForestPath4();
+        this.south.north = this;
+    }
+
+    getDescription()
+    {
+        return "You stand in the middle of a path with openings to the west and south of you.";
+    }
+}
+
+class ForestPath4 extends ParRoom
+{
+    constructor()
+    {
+        super();
+        this.south = new ForestPath5();
+        this.south.north = this;
+    }
+
+    getDescription()
+    {
+        return "You stand in the middle of a path with openings to the north and south of you.";
+    }
+}
+
+class ForestPath5 extends ParRoom
+{
+    constructor()
+    {
+        super();
+        this.south = new ForestPath6();
+        this.south.north = this;
+    }
+
+    getDescription()
+    {
+        return "You stand in the middle of a path with openings to the north and south of you.";
+    }
+}
+
+class ForestPath6 extends ParRoom
+{
+    constructor()
+    {
+        super();
+        this.west = new Clearing2();
+        this.west.east = this;
+    }
+
+    getDescription()
+    {
+        return "You stand in the middle of a path with openings to the north and west of you.";
+    }
+}
+
+class Clearing2 extends ParRoom
+{
+    constructor()
+    {
+        super();
+    }
+
+    getDescription()
+    {
+        return "You arrive in a clearing where you see a child and a dog eating pancakes. This somehow feels peaceful, yet you are not sure if this is a hallucination. You notice a path that leads back east.";
+    }
+}
+
+class Zelinsky extends ParRoom
+{
+    constructor()
+    {
+        super();
+        this.keypad = new Item("Keypad", false);
+        this.items.push(this.keypad);
+    }
+
+    getDescription()
+    {
+        var retText = "You see an old building just north of you with the text \"Zelinsky's\" adorning the space above the door."
+        if( this.items.includes(this.keypad) ) retText += " The door appears to be locked. You notice a keypad near the door that might unlock it.";
+        retText += " Otherwise, you see a path leading back south to a clearing in the forest.";
+        return retText;
+    }
+}
+
+function grab(item)
+{
+    if(item != null && item.length > 0)
+    {
+        for(var i = 0; i < currentRoom.items.length; i++)
+        {
+            if(currentRoom.items[i].name.toLowerCase() == item)
+            {
+                player.inventory.push(currentRoom.items[i]);
+                currentRoom.items.splice(i, 1);
+                outputText("You picked up the " + item + ".");
+                return;
+            }
+        }
+    }
+    outputText("There doesn't appear to be " + item + ".");
 }
 
 function goDirection(direction)
@@ -208,7 +374,8 @@ function checkGeneralCommands(text)
             }
             if( text == "inventory" )
             {
-
+                player.printInventory();
+                return true;
             }
             break;
 
@@ -218,6 +385,11 @@ function checkGeneralCommands(text)
                 goDirection(cmds[1]);
                 return true;
             }
+            if( cmds[0] == "grab" )
+            {
+                grab(cmds[1]);
+                return true;
+            }
             break;
     }
 
@@ -225,6 +397,9 @@ function checkGeneralCommands(text)
 }
 
 currentRoom = new StartingArea();
+player = new Player();
+
+outputText("You are an arist. At least, you think you are. Nothing you've done ever seems to get much attention, and you doubt your abilities. Needing a refresh, you decided to venture out into the woods to reinvigorate your mind and soul. However, you have gotten lost and can't seem to find your way out. While it is day now, it will get dark soon, and you have heard rumors about the forest at night...\n\nTHE ADVENTURE BEGINS\n");
 
 outputText(currentRoom.getDescription());
 
