@@ -48,13 +48,20 @@ class Player
 
     printInventory(self)
     {
-        outputText("Inventory");
-        outputText("---------");
-        for(var i = 0; i < this.inventory.length; i++)
+        if(this.inventory.length > 0)
         {
-            outputText(" " + this.inventory[i].name);
+            outputText("Inventory");
+            outputText("---------");
+            for(var i = 0; i < this.inventory.length; i++)
+            {
+                outputText(" " + this.inventory[i].name);
+            }
+            outputText("---------");
         }
-        outputText("---------");
+        else
+        {
+            outputText("Inventory is empty...")
+        }
     }
 
     removeItem(item)
@@ -165,6 +172,7 @@ class GagArea extends ParRoom
             case 4: return "I have a whole story created for you if you just head east. Don't you want to see it?";
             case 5: return "You're hurting my feelings. I spent hours and hours thinking up this story just for you?";
             case 6: return "Are you just doing this to see what more story there is? Or, do you think there is a secret ending here in this 'Gag Area'? I can tell you now, there isn't...";
+            case 33: return "Ok, here's something new... You see a man named Eric Honas sitting in the shade of a tree. Honestly, he looks pretty lame. Was it really worth doing this 33 times just to see Eric? Personally, I don't think so...";
             default: return "...";
         }
 
@@ -180,7 +188,7 @@ class Tablet extends ParRoom
 
     getDescription()
     {
-        return "As you reach the summit of the hill, you notice a stone tablet lying on the ground. You can barely make out the markings of a name on the stone: \"Peter.\" Inspiration seems ready to strike. It is time to prove that you are an artist...";
+        return "As you reach the summit of the hill, you notice a stone tablet lying on the ground. You can barely make out the markings of a name on the stone: \"Peter\". Inspiration seems ready to strike. It is time to prove that you are an artist...";
     }
 }
 
@@ -378,7 +386,7 @@ class Flower extends ParRoom
     {
         var retText = "You come across a patch of dirt"
         if( this.items.includes(this.flower) ) retText += " with a single golden flower sprouting out of it. Something about this flower seems to draw you in. Perhaps it LOVEs you...";
-        else retText += " with a single stone bearing the name \"Asriel.\""
+        else retText += " with a single stone bearing the name \"Asriel\"."
         retText += " You notice paths that lead both east and west."
         return retText;
     }
@@ -606,7 +614,7 @@ function checkGeneralCommands(text)
 currentRoom = new StartingArea();
 player = new Player();
 
-outputText("You are an arist. At least, you think you are. Nothing you've done ever seems to get much attention, and you doubt your abilities. Needing to refresh, you decided to venture out into the woods to reinvigorate your mind and soul. However, you have gotten lost and can't seem to find your way out. While it is day now, it will get dark soon, and you have heard rumors about the forest at night...\n\nTHE ADVENTURE BEGINS\n");
+outputText("You are an arist. At least, you think you are. Nothing you've done ever seems to get much attention, and you doubt your abilities. Needing to refresh, you decided to venture out into the woods to reinvigorate your mind and soul. However, you have gotten lost and can't seem to find your way out. While it is day now, it will get dark soon, and you have heard rumors about the forest at night...\n\nTHE ADVENTURE BEGINS\n\nAt any point in this adventure, you can type 'help' to see a list of available commands.\n");
 
 outputText(currentRoom.getDescription());
 
@@ -624,7 +632,7 @@ function handleInput()
     }
     else if(checkingKeypad)
     {
-        if(checkText.trim() == "0498")
+        if(checkText.trim() == "1002")
         {
             currentRoom.items = [];
             currentRoom.north = new Gymnasium();
